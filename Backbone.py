@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class Bottle2neck(nn.Module):
 
-    def __init__(self, inplanes, planes, stride=1, scale=3, is_Double=is_Double):
+    def __init__(self, inplanes, planes, stride=1, scale=3, is_Double=False):
 
         super(Bottle2neck, self).__init__()
         self.groups = planes//scale 
@@ -110,7 +110,7 @@ class Bottle2neck(nn.Module):
 
 class Res2Net(nn.Module):
 
-    def __init__(self, block, layers, scale, num_classes, is_Double=is_Double):
+    def __init__(self, block, layers, scale, num_classes, is_Double):
         super(Res2Net, self).__init__()
 
         self.inplanes = 32
@@ -155,15 +155,13 @@ class Res2Net(nn.Module):
             )
 
           
-
-
-    def _make_layer(self, block, planes, blocks, stride=1, is_Double=is_Double):
+    def _make_layer(self, block, planes, blocks, stride, is_Double):
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, scale=self.scale, is_Double))
+        layers.append(block(self.inplanes, planes, stride, scale=self.scale, is_Double=is_Double))
         self.inplanes = planes
         for i in range(1, blocks):
-            layers.append(block(self.inplanes, planes, scale=self.scale, is_Double))
+            layers.append(block(self.inplanes, planes, scale=self.scale, is_Double=is_Double))
         return nn.Sequential(*layers)
 
     def forward(self, x):      
@@ -182,8 +180,8 @@ class Res2Net(nn.Module):
 
         return x
     
-def my_resnet(is_Double):
+def my_resnet(is_double):
     # is_Double == True:  二维数据
     # is_Double == False: 一维数据
-    model = Res2Net(Bottle2neck, [2, 2, 2, 2], 4, 7, is_Double=is_Double)
+    model = Res2Net(Bottle2neck, [2, 2, 2, 2], 4, 7, is_Double=is_double)
     return model
