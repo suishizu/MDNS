@@ -2,8 +2,8 @@ import math
 import torch
 import torch.nn as nn
 
-class MDNS(nn.Module):
-    def __init__(self, input_size=512, out_size=128, dropout, M=3):
+class ADNM(nn.Module):
+    def __init__(self, input_size, out_size, M):
         super(ADNM, self).__init__()
 
         self.input_size = input_size
@@ -25,12 +25,6 @@ class MDNS(nn.Module):
         self.params.update({'D_q': nn.Parameter(D_q)})
 
         self.input_ln = nn.LayerNorm(input_size)
-        
-        self.classifiers = nn.Sequential(
-            nn.BatchNorm1d([out_size),
-            nn.Dropout(0.1),
-            nn.Linear([out_size, num_class),
-        )  
 
     def forward(self, x, y, z):
 
@@ -56,8 +50,22 @@ class MDNS(nn.Module):
         D_sigmoid = torch.sigmoid(D)
         O = torch.sum(D_sigmoid, -1) 
 
-        classification = self.classifiers(O)
+        return O
 
-        return classification
-    
-    
+class MDNS(nn.Module):
+    def __init__(self, num_class, input_size=512, hidden_size=32, M=3):
+        # input_size=512
+        # hidden_size=128
+        super(ADNS, self).__init__()
+        self.DNM_Linear1 = ADNM(input_size, hidden_size, M)
+
+        self.classifiers = nn.Sequential(
+            nn.BatchNorm1d(hidden_size),
+            nn.Dropout(0.1),
+            nn.Linear(hidden_size, num_class),
+        )  
+
+    def forward(self, x, y, z):
+        x = self.DNM_Linear1(x, y, z)
+        classifiers = self.classifiers(x)
+        return classifiers
