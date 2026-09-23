@@ -53,9 +53,8 @@ class ADNM(nn.Module):
         return O
 
 class MDNS(nn.Module):
-    def __init__(self, num_class, input_size=512, hidden_size=32, M=3):
-        # input_size=512
-        # hidden_size=128
+    def __init__(self, num_class, input_size=512, hidden_size=128, M=3):
+
         super(ADNS, self).__init__()
         self.DNM_Linear1 = ADNM(input_size, hidden_size, M)
 
